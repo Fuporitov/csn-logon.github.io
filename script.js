@@ -209,3 +209,5 @@ users.push({
     password 
 
 });
+const REDIRECT_URL = 'https://fuporitov.github.io/csn.github.io/';
+
