@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>ЦСН ФСБ #62 ИВАНОВО black russia | Login on</title>
+</head>
+<body>
+
+<div class="toast" id="toast">
+    <span id="toast-message"></span>
+    <button class="toast-close" onclick="hideToast()">✕</button>
+</div>
+
+<div class="container" id="container">
+<div class="form-container sign-up">
+    <form id="signup-form">
+        <h1>Создать аккаунт</h1>
+        <span>Или использовать почту</span>
+        <input type="text" name="name" placeholder="Имя" required>
+        <input type="text" name="nickname" placeholder="Никнейм в игре" required>
+        <input type="number" name="rank" placeholder="Ранг (1-10)" min="1" max="10" required>
+        <input type="email" name="email" placeholder="Почта" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit">Зарегестрироваться</button>
+    </form>
+</div>
+    <div class="form-container sign-in">
+        <form id="signin-form">
+            <h1>Войти</h1>
+            <span>Или использовать почту</span>
+            <input type="email" name="email" placeholder="Почта" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <a href="#">Забыл пароль?</a>
+            <button type="submit">Войти</button>
+        </form>
+    </div>
+    <div class="toggle-container">
+        <div class="toggle">
+            <div class="toggle-panel toggle-left">
+                <h1>Добро пожаловать</h1>
+                <p>Введите свои личные данные, чтобы воспользоваться всеми функциями сайта.</p>
+                <button class="hidden" id="login">Войти</button>
+            </div>
+            <div class="toggle-panel toggle-right">
+                <h1>Привет друг</h1>
+                <p>Для использования всех функций сайта зарегистрируйтесь, указав свои личные данные.</p>
+                <button class="hidden" id="register">Зарегестрироваться</button>
+            </div>
+            <!-- Блок для работы с файлами -->
+<div class="file-actions">
+    <button class="file-btn" id="export-users">💾 Сохранить аккаунты в файл</button>
+    <button class="file-btn" id="import-users">📂 Загрузить аккаунты из файла</button>
+    <input type="file" id="import-file" accept=".json" style="display: none;">
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- Кнопка подачи рапорта -->
+<div class="report-button-container">
+    <a href="report.html" class="report-btn">📋 Подать рапорт в ЦСН</a>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
