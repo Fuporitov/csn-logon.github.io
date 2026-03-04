@@ -1,3 +1,4 @@
+console.log('Скрипт загружен!');
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('register');
 const loginBtn = document.getElementById('login');
@@ -206,4 +207,5 @@ users.push({
     rank: parseInt(rank, 10), // сохраняем как число
     email, 
     password 
+
 });
