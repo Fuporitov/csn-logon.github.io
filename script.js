@@ -1,6 +1,6 @@
 // ========== НАСТРОЙКИ JSONBIN ==========
-const BIN_ID = 'твой_bin_id';           // сюда вставь ID
-const MASTER_KEY = 'твой_master_key';   // сюда вставь мастер-ключ
+const BIN_ID = '69a89f5743b1c97be9b3dae1';           // сюда вставь ID
+const MASTER_KEY = '$2a$10$6Rm.O3tMiZjU.rwqOCzJxu/QbN485clA.WuUon1y8wogZKIHWp2mu';   // сюда вставь мастер-ключ
 
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
@@ -96,3 +96,4 @@ signinForm.addEventListener('submit', async (e) => {
         console.error(err);
     }
 });
+
