@@ -1,6 +1,8 @@
-// ===== НАСТРОЙКИ =====
-const STORAGE_ID = 'твой_id_с_jsonstorage'; // например '123e4567-e89b-12d3-a456-426614174000'
-const STORAGE_URL = `https://jsonstorage.net/api/items/${STORAGE_ID}`;
+// ========== НАСТРОЙКИ JSONBIN ==========
+const BIN_ID = 'твой_bin_id';           // сюда вставь ID
+const MASTER_KEY = 'твой_master_key';   // сюда вставь мастер-ключ
+
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // Элементы страницы
 const container = document.getElementById('container');
@@ -11,7 +13,6 @@ const toastMessage = document.getElementById('toast-message');
 const signupForm = document.getElementById('signup-form');
 const signinForm = document.getElementById('signin-form');
 
-// Вспомогательные функции
 function showToast(message, type = 'success') {
     toastMessage.textContent = message;
     toast.className = `toast ${type} show`;
@@ -19,28 +20,35 @@ function showToast(message, type = 'success') {
 }
 window.hideToast = () => toast.classList.remove('show');
 
-// Переключение панелей
 registerBtn.addEventListener('click', () => container.classList.add('active'));
 loginBtn.addEventListener('click', () => container.classList.remove('active'));
 
-// ===== РАБОТА С ДАННЫМИ =====
-async function fetchUsers() {
-    const response = await fetch(STORAGE_URL);
+// ========== РАБОТА С JSONBIN ==========
+async function getUsers() {
+    const response = await fetch(`${BIN_URL}/latest`, {
+        headers: { 'X-Master-Key': MASTER_KEY }
+    });
     if (!response.ok) throw new Error('Ошибка загрузки');
-    return await response.json();
+    const data = await response.json();
+    return data.record;
 }
 
 async function saveUsers(users) {
-    await fetch(STORAGE_URL, {
+    const response = await fetch(BIN_URL, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': MASTER_KEY
+        },
         body: JSON.stringify(users)
     });
+    if (!response.ok) throw new Error('Ошибка сохранения');
 }
 
-// ===== РЕГИСТРАЦИЯ =====
+// ========== РЕГИСТРАЦИЯ ==========
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const name = signupForm.name.value.trim();
     const nickname = signupForm.nickname.value.trim();
     const rank = parseInt(signupForm.rank.value, 10);
@@ -48,7 +56,7 @@ signupForm.addEventListener('submit', async (e) => {
     const password = signupForm.password.value.trim();
 
     try {
-        const users = await fetchUsers();
+        const users = await getUsers();
         if (users.some(u => u.email === email)) {
             showToast('Пользователь уже существует', 'error');
             return;
@@ -60,27 +68,31 @@ signupForm.addEventListener('submit', async (e) => {
         signupForm.reset();
     } catch (err) {
         showToast('Ошибка сервера', 'error');
+        console.error(err);
     }
 });
 
-// ===== ВХОД =====
+// ========== ВХОД ==========
 signinForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const email = signinForm.email.value.trim();
     const password = signinForm.password.value.trim();
 
     try {
-        const users = await fetchUsers();
+        const users = await getUsers();
         const user = users.find(u => u.email === email && u.password === password);
         if (user) {
-            // Сохраняем текущего пользователя (без пароля)
+            // Сохраняем данные пользователя (без пароля) в localStorage
             const { password: p, ...safeUser } = user;
             localStorage.setItem('currentUser', JSON.stringify(safeUser));
-            window.location.href = 'https://fuporitov.github.io/csn.github.io/'; // Твой основной сайт
+            // Перенаправляем на основной сайт
+            window.location.href = 'https://fuporitov.github.io/csn.github.io/';
         } else {
             showToast('Неверный email или пароль', 'error');
         }
     } catch (err) {
         showToast('Ошибка сервера', 'error');
+        console.error(err);
     }
 });
