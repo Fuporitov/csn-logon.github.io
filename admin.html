@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Админка новостей</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        textarea, input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: #512da8; color: white; padding: 10px 20px; border: none; }
+        pre { background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Добавление новости</h1>
+    <input type="text" id="title" placeholder="Заголовок">
+    <textarea id="content" placeholder="Текст новости" rows="5"></textarea>
+    <button id="generate">Сгенерировать JSON</button>
+    <div id="result" style="display:none;">
+        <h3>Скопируй этот код:</h3>
+        <pre id="json-code"></pre>
+        <p>1. Открой репозиторий <b>Fuporitov/csn.github.io</b></p>
+        <p>2. Найди файл <b>news.json</b>, нажми «Edit»</p>
+        <p>3. Вставь этот код внутрь массива (после последней новости, если они есть)</p>
+        <p>4. Нажми «Commit changes»</p>
+    </div>
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (!user || user.email !== 'leader@csn.ru') {
+            window.location.href = 'index.html';
+        }
+        document.getElementById('generate').addEventListener('click', () => {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            if (!title || !content) {
+                alert('Заполни поля');
+                return;
+            }
+            const date = new Date().toLocaleString();
+            const newsItem = { title, content, date };
+            const jsonCode = JSON.stringify(newsItem, null, 2);
+            document.getElementById('json-code').textContent = jsonCode;
+            document.getElementById('result').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
