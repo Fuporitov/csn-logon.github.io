@@ -1,9 +1,3 @@
-// ========== НАСТРОЙКИ JSONBIN ==========
-const BIN_ID = '69a89f5743b1c97be9b3dae1';           // сюда вставь ID
-const MASTER_KEY = '$2a$10$6Rm.O3tMiZjU.rwqOCzJxu/QbN485clA.WuUon1y8wogZKIHWp2mu';   // сюда вставь мастер-ключ
-
-const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
 // Элементы страницы
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('register');
@@ -13,6 +7,16 @@ const toastMessage = document.getElementById('toast-message');
 const signupForm = document.getElementById('signup-form');
 const signinForm = document.getElementById('signin-form');
 
+// Ключ для хранения пользователей
+const STORAGE_KEY = 'users';
+let users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+// Сохранение пользователей
+function saveUsers() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
+
+// Уведомления
 function showToast(message, type = 'success') {
     toastMessage.textContent = message;
     toast.className = `toast ${type} show`;
@@ -20,33 +24,12 @@ function showToast(message, type = 'success') {
 }
 window.hideToast = () => toast.classList.remove('show');
 
+// Переключение панелей
 registerBtn.addEventListener('click', () => container.classList.add('active'));
 loginBtn.addEventListener('click', () => container.classList.remove('active'));
 
-// ========== РАБОТА С JSONBIN ==========
-async function getUsers() {
-    const response = await fetch(`${BIN_URL}/latest`, {
-        headers: { 'X-Master-Key': MASTER_KEY }
-    });
-    if (!response.ok) throw new Error('Ошибка загрузки');
-    const data = await response.json();
-    return data.record;
-}
-
-async function saveUsers(users) {
-    const response = await fetch(BIN_URL, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': MASTER_KEY
-        },
-        body: JSON.stringify(users)
-    });
-    if (!response.ok) throw new Error('Ошибка сохранения');
-}
-
-// ========== РЕГИСТРАЦИЯ ==========
-signupForm.addEventListener('submit', async (e) => {
+// ===== РЕГИСТРАЦИЯ =====
+signupForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const name = signupForm.name.value.trim();
@@ -55,45 +38,46 @@ signupForm.addEventListener('submit', async (e) => {
     const email = signupForm.email.value.trim();
     const password = signupForm.password.value.trim();
 
-    try {
-        const users = await getUsers();
-        if (users.some(u => u.email === email)) {
-            showToast('Пользователь уже существует', 'error');
-            return;
-        }
-        users.push({ name, nickname, rank, email, password });
-        await saveUsers(users);
-        showToast('Регистрация успешна!');
-        container.classList.remove('active');
-        signupForm.reset();
-    } catch (err) {
-        showToast('Ошибка сервера', 'error');
-        console.error(err);
+    if (users.some(u => u.email === email)) {
+        showToast('Пользователь уже существует', 'error');
+        return;
     }
+
+    users.push({ name, nickname, rank, email, password });
+    saveUsers();
+    showToast('Регистрация успешна!');
+    container.classList.remove('active');
+    signupForm.reset();
 });
 
-// ========== ВХОД ==========
-signinForm.addEventListener('submit', async (e) => {
+// ===== ВХОД =====
+signinForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const email = signinForm.email.value.trim();
     const password = signinForm.password.value.trim();
 
-    try {
-        const users = await getUsers();
-        const user = users.find(u => u.email === email && u.password === password);
-        if (user) {
-            // Сохраняем данные пользователя (без пароля) в localStorage
-            const { password: p, ...safeUser } = user;
-            localStorage.setItem('currentUser', JSON.stringify(safeUser));
-            // Перенаправляем на основной сайт
-            window.location.href = 'https://fuporitov.github.io/csn.github.io/';
-        } else {
-            showToast('Неверный email или пароль', 'error');
-        }
-    } catch (err) {
-        showToast('Ошибка сервера', 'error');
-        console.error(err);
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+        // Сохраняем текущего пользователя без пароля
+        const { password: p, ...safeUser } = user;
+        localStorage.setItem('currentUser', JSON.stringify(safeUser));
+        // Перенаправляем на основной сайт (замени ссылку)
+        window.location.href = 'https://fuporitov.github.io/csn.github.io/';
+    } else {
+        showToast('Неверный email или пароль', 'error');
+
+        // Если пользователей нет, добавить лидера
+if (users.length === 0) {
+    users.push({
+        name: 'Лидер',
+        nickname: 'Leader',
+        rank: 10,
+        email: 'leader@csn.ru',
+        password: 'securepassword' // замени на свой пароль
+    });
+    saveUsers();
+}
     }
 });
-
